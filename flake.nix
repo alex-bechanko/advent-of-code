@@ -15,12 +15,13 @@
         naersk' = pkgs.callPackage naersk { };
         rust-toolchain = pkgs.symlinkJoin {
           name = "rust-toolchain";
-          paths = [ pkgs.rustc pkgs.cargo pkgs.cargo-watch pkgs.rust-analyzer pkgs.rustPlatform.rustcSrc pkgs.clippy ];
+          paths = [ pkgs.rustc pkgs.cargo pkgs.cargo-watch pkgs.rust-analyzer  pkgs.rustPlatform.rustcSrc pkgs.clippy
+          pkgs.rustfmt];
         };
       in {
         defaultPackage = naersk'.buildPackage ./.;
         devShell = with pkgs; mkShell {
-          buildInputs = [ rust-toolchain ];
+          buildInputs = [ rust-toolchain pkgs.openssl.dev pkgs.pkg-config ];
           RUST_SRC_PATH = rustPlatform.rustLibSrc;
         };
   });
