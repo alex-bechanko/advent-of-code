@@ -1,21 +1,37 @@
+/*
+Advent of Code Solutions
+Copyright (C) 2023 Alex Bechanko
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 pub fn part_a(input: &str) -> Result<String, String> {
     let elves = parse(input)?;
 
-    let answer = elves.iter()
-        .map(|elf| elf.iter().sum::<u32>())
-        .max();
+    let answer = elves.iter().map(|elf| elf.iter().sum::<u32>()).max();
 
     match answer {
         None => return Err(String::from("No elves found in input")),
         Some(a) => return Ok(a.to_string()),
-
     }
 }
 
 pub fn part_b(input: &str) -> Result<String, String> {
     let elves = parse(input)?;
 
-    let mut answer = elves.iter()
+    let mut answer = elves
+        .iter()
         .map(|elf| elf.iter().sum::<u32>())
         .collect::<Vec<u32>>();
     answer.sort_by(|a, b| b.cmp(a));
@@ -31,13 +47,12 @@ fn parse(input: &str) -> Result<Vec<Vec<u32>>, String> {
     }
 }
 
-
 mod parse {
-    use nom::multi::many1;
-    use nom::sequence::terminated;
-    use nom::combinator::{value, eof};
     use nom::branch::alt;
     use nom::character::complete::{newline, u32};
+    use nom::combinator::{eof, value};
+    use nom::multi::many1;
+    use nom::sequence::terminated;
 
     pub fn elf_group(input: &str) -> nom::IResult<&str, Vec<Vec<u32>>> {
         many1(terminated(elf, terminator))(input)
@@ -52,14 +67,9 @@ mod parse {
     }
 
     fn terminator(input: &str) -> nom::IResult<&str, u32> {
-        alt((
-            value(0, newline),
-            value(0, eof)
-        ))(input)
+        alt((value(0, newline), value(0, eof)))(input)
     }
-
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -109,9 +119,9 @@ mod tests {
         let expected = Ok(vec![
             vec![1000, 2000, 3000],
             vec![4000],
-            vec![5000,6000],
+            vec![5000, 6000],
             vec![7000, 8000, 9000],
-            vec![10000]
+            vec![10000],
         ]);
         let actual = parse(input);
         assert_eq!(expected, actual);
@@ -120,12 +130,11 @@ mod tests {
         let expected = Ok(vec![
             vec![1000, 2000, 3000],
             vec![4000],
-            vec![5000,6000],
+            vec![5000, 6000],
             vec![7000, 8000, 9000],
-            vec![10000]
+            vec![10000],
         ]);
         let actual = parse(input);
         assert_eq!(expected, actual);
-
     }
 }
