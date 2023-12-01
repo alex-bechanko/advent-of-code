@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "licensure-dev": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1694856439,
+        "narHash": "sha256-rOD2H9TEoZ8JCjlg6feNQiAjvroVGqrlOkDHNZKXDoE=",
+        "owner": "chasinglogic",
+        "repo": "licensure",
+        "rev": "dad66942e4083db3ed61defc0fc05751b5f22f4e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "chasinglogic",
+        "repo": "licensure",
+        "type": "github"
+      }
+    },
     "naersk": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -70,6 +86,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "licensure-dev": "licensure-dev",
         "naersk": "naersk",
         "nixpkgs": "nixpkgs_2"
       }
