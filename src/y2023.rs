@@ -16,8 +16,7 @@
 * this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-mod y2022;
-mod y2023;
+mod day01;
+use crate::Solution;
 
-pub type Solution<'a> = &'a dyn Fn(&str) -> Result<String, String>;
-pub const YEARS: [&[(Solution, Solution)]; 2] = [&y2022::DAYS, &y2023::DAYS];
+pub const DAYS: [(Solution, Solution); 1] = [(&day01::part_a, &day01::part_b)];
