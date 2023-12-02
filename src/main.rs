@@ -33,7 +33,7 @@ pub struct Args {
     puzzle: u32,
 
     #[arg(short, long)]
-    file: PathBuf,
+    file: Option<PathBuf>,
 }
 
 fn main() {
@@ -54,6 +54,14 @@ fn main() {
         }
     };
 
+    let &year_input = match aoc::YEAR_INPUTS.get(year_index) {
+        Some(y) => y,
+        None => {
+            println!("No default inputs for year {}", args.year);
+            std::process::exit(1);
+        }
+    };
+
     let puzzle_index = match usize::try_from(args.puzzle).map(|d| d - 1) {
         Ok(p) => p,
         Err(_) => {
@@ -70,16 +78,23 @@ fn main() {
         }
     };
 
-    let input = match std::fs::read_to_string(args.file.as_path()) {
-        Ok(inp) => inp,
-        Err(why) => {
-            println!(
-                "Failed to read file {}: {}",
-                args.file.to_string_lossy(),
-                why
-            );
+    let &default_puzzle_input = match year_input.get(puzzle_index) {
+        Some(inp) => inp,
+        None => {
+            println!("No default input for puzzle on day {}", args.puzzle);
             std::process::exit(1);
         }
+    };
+
+    let input: String = match args.file {
+        Some(f) => match std::fs::read_to_string(f.as_path()) {
+            Ok(inp) => inp,
+            Err(why) => {
+                println!("Failed to read file {}: {}", f.to_string_lossy(), why);
+                std::process::exit(1);
+            }
+        }
+        None => default_puzzle_input.to_string(),
     };
 
     let total_timer = took::Timer::new();

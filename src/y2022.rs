@@ -20,3 +20,7 @@ pub mod day01;
 use crate::Solution;
 
 pub const DAYS: [(Solution, Solution); 1] = [(&day01::part_a, &day01::part_b)];
+
+pub const DAY_INPUTS: [&str; 1] = [
+    include_str!("../inputs/2022-12-01.txt"),
+];

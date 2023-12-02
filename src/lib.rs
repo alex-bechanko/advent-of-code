@@ -21,3 +21,4 @@ mod y2023;
 
 pub type Solution<'a> = &'a dyn Fn(&str) -> Result<String, String>;
 pub const YEARS: [&[(Solution, Solution)]; 2] = [&y2022::DAYS, &y2023::DAYS];
+pub const YEAR_INPUTS: [&[&str]; 2] = [&y2022::DAY_INPUTS, &y2023::DAY_INPUTS];
