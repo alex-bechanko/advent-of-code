@@ -9,6 +9,9 @@ excludes:
   - README.*
   - LICENSE.*
   - .*\.(md|rst|txt)
+  - .*\.toml
+  - .*\.nix
+
 # Definition of the licenses used on this project and to what files
 # they should apply.
 #
