@@ -82,14 +82,26 @@ fn main() {
         }
     };
 
-    println!("Puzzle {} for Advent of Code {}", args.puzzle, args.year);
-    match puzzle.0(input.as_str()) {
-        Ok(ans) => println!("Part A Solution: {}", ans),
-        Err(why) => println!("Part A Solution Error: {}", why),
+    let total_timer = took::Timer::new();
+
+    let part_a_timer = took::Timer::new();
+    let part_a_answer = puzzle.0(input.as_str());
+    let part_a_time = part_a_timer.took();
+
+    let part_b_timer = took::Timer::new();
+    let part_b_answer = puzzle.1(input.as_str());
+    let part_b_time = part_b_timer.took();
+
+    let total_time = total_timer.took();
+
+    println!("Puzzle {} for Advent of Code {} ({})", args.puzzle, args.year, total_time);
+    match part_a_answer {
+        Ok(ans) => println!("\tPart A Solution ({}): {}", part_a_time, ans),
+        Err(why) => println!("\tPart A Solution Error: {}", why),
     }
 
-    match puzzle.1(input.as_str()) {
-        Ok(ans) => println!("Part B Solution: {}", ans),
-        Err(why) => println!("Part B Solution Error: {}", why),
+    match part_b_answer {
+        Ok(ans) => println!("\tPart B Solution ({}): {}", part_b_time, ans),
+        Err(why) => println!("\tPart B Solution Error: {}", why),
     }
 }
