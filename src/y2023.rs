@@ -17,6 +17,10 @@
 */
 
 mod day01;
+mod day02;
 use crate::Solution;
 
-pub const DAYS: [(Solution, Solution); 1] = [(&day01::part_a, &day01::part_b)];
+pub const DAYS: [(Solution, Solution); 2] = [
+    (&day01::part_a, &day01::part_b),
+    (&day02::part_a, &day02::part_b),
+];
