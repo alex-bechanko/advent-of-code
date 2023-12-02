@@ -17,72 +17,56 @@
 */
 
 pub fn part_a(input: &str) -> Result<String, String> {
-    let calibration_values: Vec<u32> = parse::part_a(input)?;
-    let answer = calibration_values.iter().sum::<u32>();
+    let answer = input.lines().filter_map(parse::part_a_number).sum::<u32>();
+
+    //let answer = calibration_values.iter().sum::<u32>();
 
     Ok(answer.to_string())
 }
 
 pub fn part_b(input: &str) -> Result<String, String> {
-    let calibration_values: Vec<u32> = parse::part_b(input)?;
-    let answer = calibration_values.iter().sum::<u32>();
-
+    let answer = input.lines().filter_map(parse::part_b_number).sum::<u32>();
+    
     Ok(answer.to_string())
 }
 
 mod parse {
-    pub fn part_a(input: &str) -> Result<Vec<u32>, String> {
-        input
-            .lines()
-            .map(part_a_number)
-            .collect::<Option<Vec<u32>>>()
-            .ok_or("Failed to parse input".to_string())
-    }
+    const DIGITS: [&str; 10] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    const DIGITS_WORDS: [&str; 20] = [
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "zero", "one", "two", "three", "four",
+        "five", "six", "seven", "eight", "nine",
+    ];
 
     pub fn part_a_number(line: &str) -> Option<u32> {
-        let digits = vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
-        let left = find(line, &digits).map(|n| n as u32)?;
-        let right = rfind(line, &digits).map(|n| n as u32)?;
+        let left = find(line, &DIGITS).map(|n| n as u32)?;
+        let right = rfind(line, &DIGITS).map(|n| n as u32)?;
 
         Some(left * 10 + right)
-    }
-
-    pub fn part_b(input: &str) -> Result<Vec<u32>, String> {
-        input.lines().map(part_b_number).collect::<Option<Vec<u32>>>().ok_or("Failed to parse input".to_string())
     }
 
     pub fn part_b_number(line: &str) -> Option<u32> {
-        let digits = vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-        
-        let left = find(line, &digits).map(|n| (n as u32) % 10)?;
-        let right = rfind(line, &digits).map(|n| (n as u32) % 10)?;
+        let left = find(line, &DIGITS_WORDS).map(|n| (n as u32) % 10)?;
+        let right = rfind(line, &DIGITS_WORDS).map(|n| (n as u32) % 10)?;
 
         Some(left * 10 + right)
     }
 
-    pub fn find(line: &str, words: &Vec<&str>) -> Option<usize> {
-        let mut found: Vec<(usize, usize)> = words
+    pub fn find(line: &str, words: &[&str]) -> Option<usize> {
+        words
             .iter()
             .enumerate()
             .filter_map(|(i, w)| line.find(w).map(|j| (i, j)))
-            .collect();
-
-        found.sort_by(|(_, x), (_, y)| x.cmp(y));
-
-        found.first().map(|&(x, _)| x)
+            .min_by(|x,y| x.1.cmp(&y.1))
+            .map(|x| x.0)
     }
 
-    pub fn rfind(line: &str, words: &Vec<&str>) -> Option<usize> {
-        let mut found: Vec<(usize, usize)> = words
+    pub fn rfind(line: &str, words: &[&str]) -> Option<usize> {
+        words
             .iter()
             .enumerate()
             .filter_map(|(i, w)| line.rfind(w).map(|j| (i, j)))
-            .collect();
-
-        found.sort_by(|(_, x), (_, y)| y.cmp(x));
-
-        found.first().map(|&(x, _)| x)
+            .min_by(|x,y| y.1.cmp(&x.1))
+            .map(|x| x.0)
     }
 }
 
@@ -100,28 +84,10 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_part_a() {
-        let input = "1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntre7uchet\n";
-        let expected = Ok(vec![12, 38, 15, 77]);
-        let actual = parse::part_a(input);
-
-        assert_eq!(expected, actual);
-    }
-
-    #[test]
     fn test_part_b() {
         let input = "two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen\n";
         let expected = Ok("281".to_string());
         let actual = part_b(input);
-
-        assert_eq!(expected, actual);
-    }
-
-    #[test]
-    fn test_parse_part_b() {
-        let input = "two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen\n";
-        let expected = Ok(vec![29, 83, 13, 24, 42, 14, 76]);
-        let actual = parse::part_b(input);
 
         assert_eq!(expected, actual);
     }
