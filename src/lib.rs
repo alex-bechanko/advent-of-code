@@ -28,16 +28,19 @@ mod y2022 {
 mod y2023 {
     mod day01;
     mod day02;
+    mod day03;
     use crate::Solution;
 
-    pub const DAYS: [(Solution, Solution); 2] = [
+    pub const DAYS: [(Solution, Solution); 3] = [
         (&day01::part_a, &day01::part_b),
         (&day02::part_a, &day02::part_b),
+        (&day03::part_a, &day03::part_b),
     ];
 
-    pub const DAY_INPUTS: [&str; 2] = [
+    pub const DAY_INPUTS: [&str; 3] = [
         include_str!("../inputs/2023-12-01.txt"),
         include_str!("../inputs/2023-12-02.txt"),
+        include_str!("../inputs/2023-12-03.txt"),
     ];
 }
 
