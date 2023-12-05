@@ -18,11 +18,9 @@
 
 mod y2022 {
     pub mod day01;
-    use crate::Solution;
+    use crate::Day;
 
-    pub const DAYS: [(Solution, Solution); 1] = [(&day01::part_a, &day01::part_b)];
-
-    pub const DAY_INPUTS: [&str; 1] = [include_str!("../inputs/2022-12-01.txt")];
+    pub const DAYS: [Day; 1] = [(&day01::part_a, &day01::part_b, include_str!("../inputs/2022-12-01.txt"))];
 }
 
 mod y2023 {
@@ -30,23 +28,16 @@ mod y2023 {
     mod day02;
     mod day03;
     mod day04;
-    use crate::Solution;
+    use crate::Day;
 
-    pub const DAYS: [(Solution, Solution); 4] = [
-        (&day01::part_a, &day01::part_b),
-        (&day02::part_a, &day02::part_b),
-        (&day03::part_a, &day03::part_b),
-        (&day04::part_a, &day04::part_b),
-    ];
-
-    pub const DAY_INPUTS: [&str; 4] = [
-        include_str!("../inputs/2023-12-01.txt"),
-        include_str!("../inputs/2023-12-02.txt"),
-        include_str!("../inputs/2023-12-03.txt"),
-        include_str!("../inputs/2023-12-04.txt"),
+    pub const DAYS: [Day; 4] = [
+        (&day01::part_a, &day01::part_b, include_str!("../inputs/2023-12-01.txt")),
+        (&day02::part_a, &day02::part_b, include_str!("../inputs/2023-12-02.txt")),
+        (&day03::part_a, &day03::part_b, include_str!("../inputs/2023-12-03.txt")),
+        (&day04::part_a, &day04::part_b, include_str!("../inputs/2023-12-04.txt")),
     ];
 }
 
 pub type Solution<'a> = &'a dyn Fn(&str) -> Result<String, String>;
-pub const YEARS: [&[(Solution, Solution)]; 2] = [&y2022::DAYS, &y2023::DAYS];
-pub const YEAR_INPUTS: [&[&str]; 2] = [&y2022::DAY_INPUTS, &y2023::DAY_INPUTS];
+pub type Day<'a> = (Solution<'a>, Solution<'a>, &'a str);
+pub const YEARS: [&[Day]; 2] = [&y2022::DAYS, &y2023::DAYS];
