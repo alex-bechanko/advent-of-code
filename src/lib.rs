@@ -31,9 +31,10 @@ mod y2023 {
     mod day05;
     mod day06;
     mod day07;
+    mod day08;
     use crate::Day;
 
-    pub const DAYS: [Day; 7] = [
+    pub const DAYS: [Day; 8] = [
         (&day01::part_a, &day01::part_b, include_str!("../inputs/2023-12-01.txt")),
         (&day02::part_a, &day02::part_b, include_str!("../inputs/2023-12-02.txt")),
         (&day03::part_a, &day03::part_b, include_str!("../inputs/2023-12-03.txt")),
@@ -41,6 +42,7 @@ mod y2023 {
         (&day05::part_a, &day05::part_b, include_str!("../inputs/2023-12-05.txt")),
         (&day06::part_a, &day06::part_b, include_str!("../inputs/2023-12-06.txt")),
         (&day07::part_a, &day07::part_b, include_str!("../inputs/2023-12-07.txt")),
+        (&day08::part_a, &day08::part_b, include_str!("../inputs/2023-12-08.txt")),
     ];
 }
 
