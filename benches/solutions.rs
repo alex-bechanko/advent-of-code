@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use aoc;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn read_input_file(file: &str) -> String {
@@ -87,6 +86,13 @@ pub fn aoc2024(c: &mut Criterion) {
     });
     c.bench_function("2024-12-09 Part 2", |b| {
         b.iter(|| day09::part2(black_box(&read_input_file("./inputs/2024-12-09.txt"))));
+    });
+
+    c.bench_function("2024-12-10 Part 1", |b| {
+        b.iter(|| day10::part1(black_box(&read_input_file("./inputs/2024-12-10.txt"))));
+    });
+    c.bench_function("2024-12-10 Part 2", |b| {
+        b.iter(|| day10::part2(black_box(&read_input_file("./inputs/2024-12-10.txt"))));
     });
 }
 
