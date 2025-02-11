@@ -37,6 +37,8 @@ pub mod y2024 {
     pub mod day18;
     pub mod day19;
     pub mod day20;
+    pub mod direction;
+    pub mod maze;
 }
 
 use std::env;
