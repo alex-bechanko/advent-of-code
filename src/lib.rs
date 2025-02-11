@@ -32,6 +32,7 @@ pub mod y2024 {
     pub mod day13;
     pub mod day14;
     pub mod day15;
+    pub mod day16;
 }
 
 use std::env;
@@ -124,7 +125,6 @@ where
 }
 
 fn run(puzzle: &str, input: &str) {
-    use crate::*;
     match puzzle {
         "2024-12-01" => run_puzzle(input, y2024::day01::part1, y2024::day01::part2),
         "2024-12-02" => run_puzzle(input, y2024::day02::part1, y2024::day02::part2),
@@ -141,6 +141,7 @@ fn run(puzzle: &str, input: &str) {
         "2024-12-13" => run_puzzle(input, y2024::day13::part1, y2024::day13::part2),
         "2024-12-14" => run_puzzle(input, y2024::day14::part1, y2024::day14::part2),
         "2024-12-15" => run_puzzle(input, y2024::day15::part1, y2024::day15::part2),
+        "2024-12-16" => run_puzzle(input, y2024::day16::part1, y2024::day16::part2),
         _ => {
             println!("Unrecognized PUZZLE '{puzzle}'");
             std::process::exit(1);
