@@ -23,6 +23,7 @@ fn read_input_file(file: &str) -> String {
     std::fs::read_to_string(file).expect(&err)
 }
 
+#[allow(clippy::too_many_lines)]
 pub fn aoc2024(c: &mut Criterion) {
     use aoc::y2024::*;
     c.bench_function("2024-12-01 Part 1", |b| {
@@ -135,6 +136,13 @@ pub fn aoc2024(c: &mut Criterion) {
     });
     c.bench_function("2024-12-16 Part 2", |b| {
         b.iter(|| day16::part2(black_box(&read_input_file("./inputs/2024-12-16.txt"))));
+    });
+
+    c.bench_function("2024-12-17 Part 1", |b| {
+        b.iter(|| day17::part1(black_box(&read_input_file("./inputs/2024-12-17.txt"))));
+    });
+    c.bench_function("2024-12-17 Part 2", |b| {
+        b.iter(|| day17::part2(black_box(&read_input_file("./inputs/2024-12-17.txt"))));
     });
 }
 
