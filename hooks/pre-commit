@@ -1,0 +1,5 @@
+#!/bin/sh
+set -ex
+cargo check
+cargo fmt --check
+cargo clippy -- -Dwarnings

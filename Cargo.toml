@@ -1,0 +1,17 @@
+[package]
+name = "advent-of-code"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bin]]
+name = "advent-of-code"
+path = "src/main.rs"
+bench = false
+
+[lib]
+name = "aoc"
+path = "src/lib.rs"
+bench = false
