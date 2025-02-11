@@ -34,6 +34,7 @@ pub mod y2024 {
     pub mod day15;
     pub mod day16;
     pub mod day17;
+    pub mod day18;
 }
 
 use std::env;
@@ -144,6 +145,7 @@ fn run(puzzle: &str, input: &str) {
         "2024-12-15" => run_puzzle(input, y2024::day15::part1, y2024::day15::part2),
         "2024-12-16" => run_puzzle(input, y2024::day16::part1, y2024::day16::part2),
         "2024-12-17" => run_puzzle(input, y2024::day17::part1, y2024::day17::part2),
+        "2024-12-18" => run_puzzle(input, y2024::day18::part1, y2024::day18::part2),
         _ => {
             println!("Unrecognized PUZZLE '{puzzle}'");
             std::process::exit(1);
