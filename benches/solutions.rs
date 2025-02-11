@@ -94,6 +94,13 @@ pub fn aoc2024(c: &mut Criterion) {
     c.bench_function("2024-12-10 Part 2", |b| {
         b.iter(|| day10::part2(black_box(&read_input_file("./inputs/2024-12-10.txt"))));
     });
+
+    c.bench_function("2024-12-11 Part 1", |b| {
+        b.iter(|| day11::part1(black_box(&read_input_file("./inputs/2024-12-11.txt"))));
+    });
+    c.bench_function("2024-12-11 Part 2", |b| {
+        b.iter(|| day11::part2(black_box(&read_input_file("./inputs/2024-12-11.txt"))));
+    });
 }
 
 criterion_group!(solutions, aoc2024);
