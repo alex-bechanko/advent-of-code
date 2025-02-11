@@ -65,50 +65,48 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn main() {
     if env::args().any(|x| x == "-v" || x == "--version") {
-        println!("Version: {}", VERSION);
+        println!("Version: {VERSION}");
         std::process::exit(0);
     }
 
     if env::args().any(|x| x == "-h" || x == "--help") {
-        println!("{}", USAGE);
+        println!("{USAGE}");
         std::process::exit(0);
     }
 
     let mut args = env::args().skip(1);
 
-    let puzzle = match args.next() {
-        Some(p) => p,
-        None => {
-            println!("{USAGE}");
-            println!("Missing 'PUZZLE' argument");
-            std::process::exit(1);
-        }
+    let Some(puzzle) = args.next() else {
+        println!("{USAGE}");
+        println!("Missing 'PUZZLE' argument");
+        std::process::exit(1);
     };
 
-    let file = match args.next() {
-        Some(f) => f,
-        None => {
-            let f = format!("inputs/{puzzle}.txt");
-            println!("No input provided, using default {f}.");
-            f
-        }
+    let file = if let Some(f) = args.next() {
+        f
+    } else {
+        let f = format!("inputs/{puzzle}.txt");
+        println!("No input provided, using default {f}.");
+        f
     };
 
     let contents = match file.as_str() {
-        "--" => match std::io::read_to_string(std::io::stdin()) {
-            Ok(s) => s,
-            Err(_) => {
+        "--" => {
+            if let Ok(s) = std::io::read_to_string(std::io::stdin()) {
+                s
+            } else {
                 println!("Error occurred reading from stdin");
                 std::process::exit(1);
             }
-        },
-        path => match std::fs::read_to_string(path) {
-            Ok(s) => s,
-            Err(_) => {
-                println!("Error occurred reading from file: {}", path);
+        }
+        path => {
+            if let Ok(s) = std::fs::read_to_string(path) {
+                s
+            } else {
+                println!("Error occurred reading from file: {path}");
                 std::process::exit(1);
             }
-        },
+        }
     };
 
     run(&puzzle, &contents);
