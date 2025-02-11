@@ -25,11 +25,19 @@ fn read_input_file(file: &str) -> String {
 }
 
 pub fn aoc2024(c: &mut Criterion) {
+    use aoc::y2024::*;
     c.bench_function("2024-12-01 Part 1", |b| {
-        b.iter(|| aoc::y2024::day01::part1(black_box(&read_input_file("./inputs/2024-12-01.txt"))));
+        b.iter(|| day01::part1(black_box(&read_input_file("./inputs/2024-12-01.txt"))));
     });
     c.bench_function("2024-12-01 Part 2", |b| {
-        b.iter(|| aoc::y2024::day01::part2(black_box(&read_input_file("./inputs/2024-12-01.txt"))));
+        b.iter(|| day01::part2(black_box(&read_input_file("./inputs/2024-12-01.txt"))));
+    });
+
+    c.bench_function("2024-12-02 Part 1", |b| {
+        b.iter(|| day02::part1(black_box(&read_input_file("./inputs/2024-12-02.txt"))));
+    });
+    c.bench_function("2024-12-02 Part 2", |b| {
+        b.iter(|| day02::part2(black_box(&read_input_file("./inputs/2024-12-02.txt"))));
     });
 }
 
