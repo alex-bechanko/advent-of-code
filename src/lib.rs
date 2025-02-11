@@ -16,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+pub mod y2024 {
+    pub mod day01;
+}
+
 use std::env;
 
 const USAGE: &str = "\
@@ -91,7 +95,30 @@ pub fn main() {
     run(&puzzle, &contents);
 }
 
-fn run(puzzle: &str, _input: &str) {
-    println!("Unrecognized PUZZLE '{puzzle}'");
-    std::process::exit(1);
+fn run_puzzle<F, G, A, B>(input: &str, part1: F, part2: G)
+where
+    F: Fn(&str) -> A,
+    G: Fn(&str) -> B,
+    A: ToString,
+    B: ToString,
+{
+    let soln1 = part1(input).to_string();
+    println!("Part 1 Solution: {soln1}");
+
+    let soln2 = part2(input).to_string();
+    println!("Part 2 Solution: {soln2}");
+}
+
+fn run(puzzle: &str, input: &str) {
+    match puzzle {
+        "2024-12-01" => run_puzzle(
+            input,
+            crate::y2024::day01::part1,
+            crate::y2024::day01::part2,
+        ),
+        _ => {
+            println!("Unrecognized PUZZLE '{puzzle}'");
+            std::process::exit(1);
+        }
+    }
 }
