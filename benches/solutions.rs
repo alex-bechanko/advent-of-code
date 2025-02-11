@@ -1,0 +1,38 @@
+/*
+Advent of Code solutions written in the Rust programming language
+Copyright (C) 2025 Alexander Bechanko
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+use aoc;
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+fn read_input_file(file: &str) -> String {
+    let err = format!("Expected input file {file}");
+    std::fs::read_to_string(file).expect(&err)
+}
+
+pub fn aoc2024(c: &mut Criterion) {
+    c.bench_function("2024-12-01 Part 1", |b| {
+        b.iter(|| aoc::y2024::day01::part1(black_box(&read_input_file("./inputs/2024-12-01.txt"))));
+    });
+    c.bench_function("2024-12-01 Part 2", |b| {
+        b.iter(|| aoc::y2024::day01::part2(black_box(&read_input_file("./inputs/2024-12-01.txt"))));
+    });
+}
+
+criterion_group!(solutions, aoc2024);
+
+criterion_main!(solutions);

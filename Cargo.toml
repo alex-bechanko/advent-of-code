@@ -15,3 +15,8 @@ bench = false
 name = "aoc"
 path = "src/lib.rs"
 bench = false
+
+[[bench]]
+name = "solutions"
+harness = false
+
