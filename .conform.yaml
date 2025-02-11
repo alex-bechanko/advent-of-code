@@ -13,6 +13,8 @@ policies:
       maximumOfOneCommit: true
       conventional:
         descriptionLength: 72
+        types:
+          - refactor
   - type: license
     spec:
       skipPaths:
