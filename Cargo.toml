@@ -17,6 +17,10 @@ path = "src/lib.rs"
 bench = false
 
 [[bench]]
-name = "solutions"
+name = "individual_solutions"
+harness = false
+
+[[bench]]
+name = "all_solutions"
 harness = false
 
