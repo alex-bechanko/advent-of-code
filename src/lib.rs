@@ -40,6 +40,7 @@ pub mod y2024 {
     pub mod day21;
     pub mod day22;
     pub mod day23;
+    pub mod day24;
     pub mod direction;
     pub mod graph;
     pub mod maze;
@@ -157,6 +158,7 @@ fn run(puzzle: &str, input: &str) {
         "2024-12-21" => run_puzzle(input, y2024::day21::part1, y2024::day21::part2),
         "2024-12-22" => run_puzzle(input, y2024::day22::part1, y2024::day22::part2),
         "2024-12-23" => run_puzzle(input, y2024::day23::part1, y2024::day23::part2),
+        "2024-12-24" => run_puzzle(input, y2024::day24::part1, y2024::day24::part2),
         _ => {
             println!("Unrecognized PUZZLE '{puzzle}'");
             std::process::exit(1);
