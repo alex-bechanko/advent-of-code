@@ -40,7 +40,7 @@ fn num_stones_memo(cache: &mut HashMap<(u128, usize), usize>, stone: u128, blink
 
     let ans = if stone == 0 {
         num_stones_memo(cache, 1, blinks - 1)
-    } else if num_digits(stone) % 2 == 0 {
+    } else if num_digits(stone).is_multiple_of(2) {
         let left = stone / 10u128.pow(num_digits(stone) / 2);
         let right = stone % 10u128.pow(num_digits(stone) / 2);
 
