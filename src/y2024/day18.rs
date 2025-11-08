@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::cmp::{Ord, PartialOrd};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 fn parse(input: &str) -> Option<Vec<(usize, usize)>> {
@@ -30,30 +29,6 @@ fn parse(input: &str) -> Option<Vec<(usize, usize)>> {
     }
 
     Some(pts)
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-struct Point(usize, usize);
-
-impl From<(usize, usize)> for Point {
-    fn from(value: (usize, usize)) -> Self {
-        Point(value.0, value.1)
-    }
-}
-
-impl PartialOrd for Point {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Point {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        let self_dist = self.0 + self.1;
-        let other_dist = other.0 + other.1;
-
-        self_dist.cmp(&other_dist)
-    }
 }
 
 #[allow(dead_code)]
