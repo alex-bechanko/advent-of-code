@@ -186,6 +186,13 @@ pub fn aoc2024(c: &mut Criterion) {
     c.bench_function("2024-12-23 Part 2", |b| {
         b.iter(|| aoc::y2024::day23::part2(black_box(&read_input_file("./inputs/2024-12-23.txt"))));
     });
+
+    c.bench_function("2024-12-24 Part 1", |b| {
+        b.iter(|| aoc::y2024::day24::part1(black_box(&read_input_file("./inputs/2024-12-24.txt"))));
+    });
+    c.bench_function("2024-12-24 Part 2", |b| {
+        b.iter(|| aoc::y2024::day24::part2(black_box(&read_input_file("./inputs/2024-12-24.txt"))));
+    });
 }
 
 criterion_group!(solutions, aoc2024);
