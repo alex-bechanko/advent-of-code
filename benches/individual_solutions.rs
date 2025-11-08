@@ -193,6 +193,11 @@ pub fn aoc2024(c: &mut Criterion) {
     c.bench_function("2024-12-24 Part 2", |b| {
         b.iter(|| aoc::y2024::day24::part2(black_box(&read_input_file("./inputs/2024-12-24.txt"))));
     });
+
+    c.bench_function("2024-12-25 Part 1", |b| {
+        b.iter(|| aoc::y2024::day25::part1(black_box(&read_input_file("./inputs/2024-12-25.txt"))));
+    });
+    // no part 2024-12-25 part 2, so don't bench the "No Solution"
 }
 
 criterion_group!(solutions, aoc2024);

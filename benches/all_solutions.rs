@@ -73,8 +73,10 @@ pub fn aoc2024(c: &mut Criterion) {
             aoc::y2024::day22::part2(black_box(&read_input_file("./inputs/2024-12-22.txt")));
             aoc::y2024::day23::part1(black_box(&read_input_file("./inputs/2024-12-23.txt")));
             aoc::y2024::day23::part2(black_box(&read_input_file("./inputs/2024-12-23.txt")));
+            aoc::y2024::day24::part1(black_box(&read_input_file("./inputs/2024-12-24.txt")));
             aoc::y2024::day24::part2(black_box(&read_input_file("./inputs/2024-12-24.txt")));
-            aoc::y2024::day24::part2(black_box(&read_input_file("./inputs/2024-12-24.txt")));
+            aoc::y2024::day25::part1(black_box(&read_input_file("./inputs/2024-12-25.txt")));
+            // no part 2024-12-25 part 2, so don't bench the "No Solution"
         });
     });
 }
