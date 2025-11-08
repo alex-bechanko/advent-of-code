@@ -89,6 +89,8 @@ fn line(grid: &[Vec<bool>]) -> bool {
     let check: Vec<isize> = vec![-4, -3, -2, -1, 0, 1, 2, 3, 4];
 
     for row in 4..(grid.len() - 4) {
+        // allowind this for now while I rethink how to restructure this check best
+        #[allow(clippy::needless_range_loop)]
         for col in 0..grid[0].len() {
             if check
                 .iter()
@@ -115,6 +117,7 @@ fn place_robots(robots: &[Robot<usize>], grid_width: usize, grid_height: usize) 
 fn print_grid(grid: &[Vec<bool>]) {
     let mut s = String::with_capacity(grid.len() * (grid[0].len() + 1));
     for row in 0..grid.len() {
+        #[allow(clippy::needless_range_loop)]
         for col in 0..grid[0].len() {
             let x = grid[row][col];
             if x {
