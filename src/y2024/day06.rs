@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 struct Guard(Direction, usize, usize);
@@ -97,32 +97,52 @@ fn parse(input: &str) -> (Guard, Vec<Vec<bool>>) {
 
 pub fn part1(input: &str) -> usize {
     let (guard, maze) = parse(input);
+    let positions = path(guard, &maze).expect("Guard is in a loop");
 
     let coords: HashSet<(usize, usize)> =
-        HashSet::from_iter(positions(guard, &maze).iter().map(|&Guard(_, x, y)| (x, y)));
+        HashSet::from_iter(positions.iter().map(|&Guard(_, x, y)| (x, y)));
 
     coords.len()
 }
 
-fn positions(mut guard: Guard, maze: &Vec<Vec<bool>>) -> HashSet<Guard> {
-    let mut positions = HashSet::with_capacity(5000);
-    positions.insert(guard);
+/// Computes the full path the guard will take.
+/// If the guard is forced into a loop, return None.
+fn path(mut guard: Guard, maze: &Vec<Vec<bool>>) -> Option<Vec<Guard>> {
+    let mut positions: Vec<Guard> = Vec::with_capacity(5000);
+    positions.push(guard);
 
     while let Some(next) = guard.step(maze) {
-        positions.insert(next);
+        guard = next;
+        if positions.contains(&next) {
+            return None;
+        }
+
+        positions.push(next);
+    }
+
+    Some(positions)
+}
+
+fn cast(mut guard: Guard, maze: &Vec<Vec<bool>>) -> Option<Guard> {
+    let Guard(curr_direction, _, _) = guard;
+
+    while let Some(next) = guard.step(maze) {
+        let Guard(next_direction, _, _) = next;
+        if next_direction != curr_direction {
+            return Some(next);
+        }
+
         guard = next;
     }
 
-    positions
+    None
 }
 
-/// Computes the full path the guard will take.
-/// If the guard is forced into a loop, return None.
-fn path(mut guard: Guard, maze: &Vec<Vec<bool>>) -> Option<HashSet<Guard>> {
-    let mut positions: HashSet<Guard> = HashSet::with_capacity(5000);
+fn walk(mut guard: Guard, maze: &Vec<Vec<bool>>) -> Option<HashSet<Guard>> {
+    let mut positions = HashSet::with_capacity(200);
     positions.insert(guard);
 
-    while let Some(next) = guard.step(maze) {
+    while let Some(next) = cast(guard, maze) {
         guard = next;
         if !positions.insert(next) {
             return None;
@@ -139,15 +159,26 @@ pub fn part2(input: &str) -> usize {
     let blocks: HashSet<(usize, usize)> =
         HashSet::from_iter(travelled.iter().map(|&Guard(_, x, y)| (x, y)));
 
+    let mut first_guard_positions = HashMap::new();
+    for w in travelled.windows(2) {
+        let past = w[0];
+        let curr = w[1];
+        let Guard(_, x, y) = curr;
+        let pos = (x, y);
+
+        first_guard_positions.entry(pos).or_insert(past);
+    }
+
     let mut count = 0;
-    for &(x, y) in blocks.iter() {
-        maze[y][x] = true;
-
-        if path(guard, &maze).is_none() {
-            count += 1;
+    for pos in blocks.iter() {
+        let &(x, y) = pos;
+        if let Some(&guard) = first_guard_positions.get(pos) {
+            maze[y][x] = true;
+            if walk(guard, &maze).is_none() {
+                count += 1;
+            }
+            maze[y][x] = false;
         }
-
-        maze[y][x] = false;
     }
 
     count
