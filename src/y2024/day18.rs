@@ -126,23 +126,8 @@ pub fn part2(input: &str) -> String {
     let goal = (70, 70);
     let pts = parse(input).expect("Failed to parse input");
 
-    let mut path: Vec<(usize, usize)> =
-        shortest_path(&[], goal).expect("No obstacles should mean there is a path");
-    for i in 1..=pts.len() {
-        // check if the additional point will require a recalculation of the shortest path
-        if !path.contains(&pts[i - 1]) {
-            continue;
-        }
+    let time_steps: Vec<usize> = (1..pts.len()).collect();
+    let blocked = time_steps.partition_point(|&i| shortest_path(&pts[0..i], goal).is_some());
 
-        let updated_path = shortest_path(&pts[0..i], goal);
-
-        if let Some(p) = updated_path {
-            path = p;
-        } else {
-            let block = pts[i - 1];
-            return format!("{},{}", block.0, block.1);
-        }
-    }
-
-    "Always a path".to_owned()
+    format!("{},{}", pts[blocked].0, pts[blocked].1)
 }
