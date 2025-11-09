@@ -17,10 +17,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #[derive(Debug)]
-struct SecretIterator(isize);
+struct SecretIterator(usize);
 
 impl Iterator for SecretIterator {
-    type Item = isize;
+    type Item = usize;
     fn next(&mut self) -> Option<Self::Item> {
         let secret = self.0;
         let prune_number = 16_777_216;
@@ -33,59 +33,62 @@ impl Iterator for SecretIterator {
     }
 }
 
-fn bananas(secret: isize) -> isize {
+fn bananas(secret: usize) -> usize {
     secret % 10
 }
 
-fn differences(arr: &[isize]) -> Vec<isize> {
-    arr.windows(2).map(|win| win[1] - win[0]).collect()
-}
+fn sequence_totals(monkeys: &[usize], lookahead: usize) -> Vec<usize> {
+    let mut sequence_bananas = vec![0usize; 19usize.pow(4)];
+    let mut last_monkey = vec![0usize; 19usize.pow(4)];
 
-fn sequence_matrix(monkeys: &[Vec<isize>]) -> Vec<isize> {
-    let monkey_diffs: Vec<Vec<isize>> = monkeys.iter().map(|monkey| differences(monkey)).collect();
-    let mut monkey_seqs: Vec<isize> = vec![0; 19usize.pow(4)];
-    let mut monkey_seq_exists: Vec<Vec<bool>> = vec![vec![false; 19usize.pow(4)]; monkeys.len()];
+    for (i, &monkey) in monkeys.iter().enumerate() {
+        let mut monkey = SecretIterator(monkey).map(bananas);
 
-    for (monkey, diffs) in monkey_diffs.iter().enumerate() {
-        for (seq_start_index, seq) in diffs.windows(4).enumerate() {
-            let encoded_sequence: isize = (seq[0] + 9)
-                + (seq[1] + 9) * 19isize
-                + (seq[2] + 9) * 19isize.pow(2)
-                + (seq[3] + 9) * 19isize.pow(3);
-            let encoded_sequence: usize = encoded_sequence.try_into().unwrap();
-            let bananas = monkeys[monkey][seq_start_index + 4];
+        // calculate the first hash
+        let (mut hash, mut prev) = {
+            let c1 = monkey.next().unwrap();
+            let c2 = monkey.next().unwrap();
+            let c3 = monkey.next().unwrap();
+            let c4 = monkey.next().unwrap();
+            let c5 = monkey.next().unwrap();
 
-            if !monkey_seq_exists[monkey][encoded_sequence] {
-                monkey_seqs[encoded_sequence] += bananas;
-                monkey_seq_exists[monkey][encoded_sequence] = true;
+            // adding 9 first removes need to case to isize first
+            let d1 = 9 + c2 - c1;
+            let d2 = 9 + c3 - c2;
+            let d3 = 9 + c4 - c3;
+            let d4 = 9 + c5 - c4;
+
+            let hash = d1 + (d2 * 19usize) + (d3 * 19usize.pow(2)) + (d4 * 19usize.pow(3));
+
+            (hash, c5)
+        };
+
+        sequence_bananas[hash] += prev;
+        last_monkey[hash] = i;
+
+        for curr in monkey.take(lookahead - 5) {
+            let diff = 9 + curr - prev;
+            hash -= hash % 19;
+            hash /= 19;
+            hash += diff * 19usize.pow(3);
+
+            if last_monkey[hash] != i {
+                sequence_bananas[hash] += curr;
+                last_monkey[hash] = i;
             }
+
+            prev = curr;
         }
     }
 
-    monkey_seqs
+    sequence_bananas
 }
 
-fn max_sequence(secrets: &[isize], lookahead: usize) -> Option<isize> {
-    let monkeys: Vec<Vec<isize>> = secrets
-        .iter()
-        .map(|&secret| {
-            SecretIterator(secret)
-                .take(lookahead)
-                .map(bananas)
-                .collect()
-        })
-        .collect();
-
-    let sequences = sequence_matrix(&monkeys);
-
-    sequences.into_iter().max()
-}
-
-pub fn part1(input: &str) -> isize {
+pub fn part1(input: &str) -> usize {
     input
         .lines()
         .filter_map(|line| {
-            line.parse::<isize>()
+            line.parse::<usize>()
                 .ok()
                 .and_then(|secret| SecretIterator(secret).nth(2000))
         })
@@ -93,14 +96,13 @@ pub fn part1(input: &str) -> isize {
 }
 
 /// # Panics
-pub fn part2(input: &str) -> isize {
+pub fn part2(input: &str) -> usize {
     let num_prices = 2000;
-    let secrets: Vec<isize> = input
-        .lines()
-        .filter_map(|line| line.parse::<isize>().ok())
-        .collect();
+    let secrets: Vec<usize> = input.lines().filter_map(|line| line.parse().ok()).collect();
 
-    let ans = max_sequence(&secrets, num_prices);
-
-    ans.unwrap()
+    sequence_totals(&secrets, num_prices)
+        .iter()
+        .max()
+        .copied()
+        .unwrap()
 }
