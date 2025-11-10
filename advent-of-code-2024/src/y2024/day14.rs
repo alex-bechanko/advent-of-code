@@ -107,7 +107,7 @@ fn line(grid: &[Vec<bool>]) -> bool {
 fn place_robots(robots: &[Robot<usize>], grid_width: usize, grid_height: usize) -> Vec<Vec<bool>> {
     let mut grid = vec![vec![false; grid_width]; grid_height];
     for robot in robots {
-        grid[robot.0 .1][robot.0 .0] = true;
+        grid[robot.0.1][robot.0.0] = true;
     }
 
     grid

@@ -40,28 +40,28 @@ impl Maze for GridMaze {
         // left
         let d = direction.rotate_counterclockwise();
         let cost = 1001;
-        if let Some(pt) = position.linear_move(d) {
-            if let Some('.') = self.get(pt) {
-                ns.push((cost, (d, pt)));
-            }
+        if let Some(pt) = position.linear_move(d)
+            && let Some('.') = self.get(pt)
+        {
+            ns.push((cost, (d, pt)));
         }
 
         // right
         let d = direction.rotate_clockwise();
         let cost = 1001;
-        if let Some(pt) = position.linear_move(d) {
-            if let Some('.') = self.get(pt) {
-                ns.push((cost, (d, pt)));
-            }
+        if let Some(pt) = position.linear_move(d)
+            && let Some('.') = self.get(pt)
+        {
+            ns.push((cost, (d, pt)));
         }
 
         // forward
         let d = direction;
         let cost = 1;
-        if let Some(pt) = position.linear_move(d) {
-            if let Some('.') = self.get(pt) {
-                ns.push((cost, (d, pt)));
-            }
+        if let Some(pt) = position.linear_move(d)
+            && let Some('.') = self.get(pt)
+        {
+            ns.push((cost, (d, pt)));
         }
 
         ns

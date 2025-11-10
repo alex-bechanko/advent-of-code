@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use crate::y2024::graph::{max_cliques, AdjacencyList, Graph};
+use crate::y2024::graph::{AdjacencyList, Graph, max_cliques};
 
 fn network_to_adjacency_list(input: &str) -> AdjacencyList<&str> {
     input.lines().filter_map(|l| l.split_once('-')).fold(

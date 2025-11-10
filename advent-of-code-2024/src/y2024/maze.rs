@@ -55,10 +55,10 @@ pub trait Maze {
                             prev.insert(neighbor_node, vec![current_node]);
                         }
                         Equal => {
-                            if let Some(ps) = prev.get_mut(&neighbor_node) {
-                                if !ps.contains(&current_node) {
-                                    ps.push(current_node);
-                                }
+                            if let Some(ps) = prev.get_mut(&neighbor_node)
+                                && !ps.contains(&current_node)
+                            {
+                                ps.push(current_node);
                             }
                         }
                     }
