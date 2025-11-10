@@ -85,36 +85,36 @@ pub fn main() {
     let mut args = env::args().skip(1);
 
     let Some(puzzle) = args.next() else {
-        println!("{USAGE}");
-        println!("Missing 'PUZZLE' argument");
+        eprintln!("{USAGE}");
+        eprintln!("Missing 'PUZZLE' argument");
         std::process::exit(1);
     };
 
-    let file = if let Some(f) = args.next() {
-        f
-    } else {
-        let f = format!("inputs/{puzzle}.txt");
-        println!("No input provided, using default {f}.");
-        f
+    let defaults = vec![
+        format!("{puzzle}.txt"),
+        format!("inputs/{puzzle}.txt"),
+        format!("advent-of-code-2024/inputs/{puzzle}.txt"),
+    ];
+
+    let file_arg = args.next();
+    let file_input_name = match file_arg.as_deref() {
+        Some("--") => "STDIN".to_string(),
+        Some(p) => p.to_string(),
+        None => defaults.join(", "),
     };
 
-    let contents = match file.as_str() {
-        "--" => {
-            if let Ok(s) = std::io::read_to_string(std::io::stdin()) {
-                s
-            } else {
-                println!("Error occurred reading from stdin");
-                std::process::exit(1);
-            }
-        }
-        path => {
-            if let Ok(s) = std::fs::read_to_string(path) {
-                s
-            } else {
-                println!("Error occurred reading from file: {path}");
-                std::process::exit(1);
-            }
-        }
+    let contents = match file_arg.as_deref() {
+        Some("--") => std::io::read_to_string(std::io::stdin()).ok(),
+        Some(p) => std::fs::read_to_string(p).ok(),
+        None => defaults
+            .into_iter()
+            .filter_map(|path| std::fs::read_to_string(path.as_str()).ok())
+            .next(),
+    };
+
+    let Some(contents) = contents else {
+        eprintln!("Failed to read file: {file_input_name}");
+        std::process::exit(1);
     };
 
     run(&puzzle, &contents);

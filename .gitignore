@@ -1,5 +1,5 @@
 /target
-/examples
-/inputs
+*/examples
+*/inputs
 .direnv
 .envrc
