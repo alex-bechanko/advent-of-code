@@ -47,6 +47,10 @@ pub mod y2024 {
     pub mod maze;
 }
 
+pub mod y2025 {
+    pub mod day01;
+}
+
 use std::env;
 
 const USAGE: &str = "\
@@ -136,6 +140,7 @@ where
 
 fn run(puzzle: &str, input: &str) {
     match puzzle {
+        // 2024
         "2024-12-01" => run_puzzle(input, y2024::day01::part1, y2024::day01::part2),
         "2024-12-02" => run_puzzle(input, y2024::day02::part1, y2024::day02::part2),
         "2024-12-03" => run_puzzle(input, y2024::day03::part1, y2024::day03::part2),
@@ -161,6 +166,8 @@ fn run(puzzle: &str, input: &str) {
         "2024-12-23" => run_puzzle(input, y2024::day23::part1, y2024::day23::part2),
         "2024-12-24" => run_puzzle(input, y2024::day24::part1, y2024::day24::part2),
         "2024-12-25" => run_puzzle(input, y2024::day25::part1, y2024::day25::part2),
+        // 2025
+        "2025-12-01" => run_puzzle(input, y2025::day01::part1, y2025::day01::part2),
         _ => {
             println!("Unrecognized PUZZLE '{puzzle}'");
             std::process::exit(1);
