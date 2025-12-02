@@ -16,253 +16,223 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::fmt::Display;
+use crate::y2024::direction::CardinalDirection;
+use std::{collections::VecDeque, fmt::Display};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum Cell {
-    Robot,
-    Box(bool),
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+enum Space {
+    Empty,
     Wall,
-    Space,
+    Box,
+    BigBoxStart,
+    BigBoxEnd,
+    Robot,
 }
 
-#[derive(Clone)]
+impl Display for Space {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let c = match self {
+            Self::Empty => '.',
+            Self::Box => 'O',
+            Self::Wall => '#',
+            Self::Robot => '@',
+            Self::BigBoxStart => '[',
+            Self::BigBoxEnd => ']',
+        };
+
+        write!(f, "{c}")
+    }
+}
+
+#[derive(Debug)]
 struct Warehouse {
-    expanded: bool,
-    robot_row: usize,
-    robot_col: usize,
-    contents: Vec<Vec<Cell>>,
+    spaces: Vec<Space>,
+    robot: usize,
+    width: usize,
+}
+
+impl Warehouse {
+    fn goal(&self, index: usize, direction: CardinalDirection) -> usize {
+        use CardinalDirection::{Down, Left, Right, Up};
+        match direction {
+            Up => index - self.width,
+            Down => index + self.width,
+            Left => index - 1,
+            Right => index + 1,
+        }
+    }
+
+    fn dependencies(&self, index: usize, direction: CardinalDirection) -> Vec<usize> {
+        let goal = self.goal(index, direction);
+        let mut frontier = VecDeque::new();
+        frontier.push_back(goal);
+
+        let mut dependencies = vec![index];
+        while let Some(s) = frontier.pop_front() {
+            if dependencies.contains(&s) {
+                continue;
+            }
+
+            let space = self.spaces[s];
+            match space {
+                Space::Empty => {}
+                Space::Wall | Space::Robot => dependencies.push(s),
+                Space::Box => {
+                    dependencies.push(s);
+                    frontier.push_back(self.goal(s, direction));
+                }
+                Space::BigBoxStart => {
+                    dependencies.push(s);
+                    frontier.push_back(s + 1);
+                    frontier.push_back(self.goal(s, direction));
+                }
+                Space::BigBoxEnd => {
+                    dependencies.push(s);
+                    frontier.push_back(s - 1);
+                    frontier.push_back(self.goal(s, direction));
+                }
+            }
+        }
+
+        dependencies
+    }
+
+    fn move_robot(&mut self, direction: CardinalDirection) {
+        let ds = self.dependencies(self.robot, direction);
+        let wall_in_way = ds.iter().map(|&i| self.spaces[i]).any(|s| s == Space::Wall);
+
+        if wall_in_way {
+            return;
+        }
+
+        let goal = self.goal(self.robot, direction);
+
+        let mut ds = ds;
+        while let Some(d) = ds.pop() {
+            let goal = self.goal(d, direction);
+            self.spaces[goal] = self.spaces[d];
+            self.spaces[d] = Space::Empty;
+        }
+
+        self.robot = goal;
+    }
 }
 
 impl Display for Warehouse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in &self.contents {
-            for col in row {
-                match col {
-                    Cell::Box(false) => write!(f, "]")?,
-                    Cell::Box(true) => {
-                        if self.expanded {
-                            write!(f, "[")?;
-                        } else {
-                            write!(f, "0")?;
-                        }
-                    }
-                    Cell::Robot => write!(f, "\x1b[31m@\x1b[0m")?,
-                    Cell::Space => write!(f, ".")?,
-                    Cell::Wall => write!(f, "#")?,
-                };
+        for (i, v) in self.spaces.iter().enumerate() {
+            if i != 0 && i % self.width == 0 {
+                writeln!(f)?;
             }
-            writeln!(f)?;
+            write!(f, "{v}")?;
         }
 
         Ok(())
     }
 }
 
-impl Warehouse {
-    fn with_expansion(input: &str, expanded: bool) -> Option<Warehouse> {
-        let mut robot = None;
-        let mut contents = vec![];
-        for line in input.lines() {
-            let mut row = vec![];
-            for c in line.chars() {
-                let cell = match c {
-                    '#' => Some(Cell::Wall),
-                    'O' => Some(Cell::Box(true)),
-                    '@' => Some(Cell::Robot),
-                    '.' => Some(Cell::Space),
-                    _ => None,
-                }?;
+fn parse(input: &str) -> Option<(Warehouse, Vec<CardinalDirection>)> {
+    let (spaces, directions) = input.split_once("\n\n")?;
 
-                if cell == Cell::Robot {
-                    robot = Some((contents.len(), row.len()));
-                }
+    let width = spaces.lines().next()?;
+    let width = width.chars().count();
 
-                row.push(cell);
-                if expanded {
-                    let c = match cell {
-                        Cell::Robot => Cell::Space,
-                        Cell::Box(true) => Cell::Box(false),
-                        c => c,
-                    };
-
-                    row.push(c);
-                }
-            }
-            contents.push(row);
-        }
-
-        let (robot_row, robot_col) = robot?;
-        let warehouse = Warehouse {
-            expanded,
-            robot_row,
-            robot_col,
-            contents,
-        };
-
-        Some(warehouse)
-    }
-
-    fn gps_sum(&self) -> usize {
-        let mut total = 0;
-        for row in 0..self.contents.len() {
-            for col in 0..self.contents[0].len() {
-                if self.contents[row][col] == Cell::Box(true) {
-                    total += 100 * row + col;
-                }
-            }
-        }
-
-        total
-    }
-
-    fn walk(
-        &mut self,
-        moves: &mut Vec<(usize, usize, Cell)>,
-        row: usize,
-        col: usize,
-        direction: Direction,
-    ) -> Option<()> {
-        let cell = self.contents[row][col];
-        match cell {
-            Cell::Space => Some(()),
-            Cell::Wall => {
-                moves.clear();
-                None
-            }
-            Cell::Robot => {
-                let (row2, col2) = next_pair(row, col, direction).unwrap();
-                moves.push((row2, col2, Cell::Robot));
-                self.walk(moves, row2, col2, direction)
-            }
-            Cell::Box(false) => self.walk(moves, row, col - 1, direction),
-            Cell::Box(true) if self.expanded => match direction {
-                Direction::Up | Direction::Down => {
-                    let (row2, col2) = next_pair(row, col, direction).unwrap();
-                    moves.push((row2, col2, Cell::Box(true)));
-                    moves.push((row2, col2 + 1, Cell::Box(false)));
-                    self.walk(moves, row2, col2, direction)?;
-                    self.walk(moves, row2, col2 + 1, direction)
-                }
-                Direction::Right => {
-                    let (row2, col2) = next_pair(row, col, direction).unwrap();
-                    moves.push((row2, col2, Cell::Box(true)));
-                    moves.push((row2, col2 + 1, Cell::Box(false)));
-                    self.walk(moves, row2, col2 + 1, direction)
-                }
-                Direction::Left => {
-                    let (row2, col2) = next_pair(row, col, direction).unwrap();
-                    moves.push((row2, col2, Cell::Box(true)));
-                    moves.push((row2, col2 + 1, Cell::Box(false)));
-                    self.walk(moves, row2, col2, direction)
-                }
-            },
-            Cell::Box(true) if !self.expanded => {
-                let (row2, col2) = next_pair(row, col, direction).unwrap();
-                moves.push((row2, col2, Cell::Box(true)));
-                self.walk(moves, row2, col2, direction)
-            }
-            Cell::Box(_) => unreachable!(),
-        }
-    }
-
-    fn move_robot(&mut self, direction: Direction) -> bool {
-        let mut moves = vec![];
-        let Some(()) = self.walk(&mut moves, self.robot_row, self.robot_col, direction) else {
-            return false;
-        };
-
-        for &(row, col, cell) in &moves {
-            // for each move, we need to check if the cell needs to be backfilled with a space
-            let (prev_row, prev_col) = next_pair(row, col, direction.opposite()).unwrap();
-            if moves
-                .iter()
-                .any(|(r, c, _)| *r == prev_row && *c == prev_col)
-            {
-                self.contents[prev_row][prev_col] = Cell::Space;
-            }
-
-            self.contents[row][col] = cell;
-            if cell == Cell::Robot {
-                self.robot_row = row;
-                self.robot_col = col;
-            }
-        }
-
-        true
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Direction {
-    fn from_char(value: char) -> Option<Direction> {
-        match value {
-            '<' => Some(Direction::Left),
-            '>' => Some(Direction::Right),
-            'v' => Some(Direction::Down),
-            '^' => Some(Direction::Up),
+    let spaces: Vec<Space> = spaces
+        .chars()
+        .filter_map(|c| match c {
+            '.' => Some(Space::Empty),
+            'O' => Some(Space::Box),
+            '@' => Some(Space::Robot),
+            '#' => Some(Space::Wall),
             _ => None,
-        }
-    }
-
-    fn opposite(self) -> Direction {
-        match self {
-            Direction::Up => Direction::Down,
-            Direction::Down => Direction::Up,
-            Direction::Left => Direction::Right,
-            Direction::Right => Direction::Left,
-        }
-    }
-}
-
-fn next_pair(row: usize, col: usize, d: Direction) -> Option<(usize, usize)> {
-    let (dr, dc) = match d {
-        Direction::Up => (-1, 0),
-        Direction::Down => (1, 0),
-        Direction::Left => (0, -1),
-        Direction::Right => (0, 1),
-    };
-
-    // failure to add means that row or col was 0
-    // in otherwords, an invalid move and so the warehouse
-    // doesnt change
-    let row = row.checked_add_signed(dr)?;
-    let col = col.checked_add_signed(dc)?;
-
-    Some((row, col))
-}
-
-fn parse(input: &str, part_two: bool) -> Option<(Warehouse, Vec<Direction>)> {
-    let (warehouse, directions) = input.split_once("\n\n")?;
-    let warehouse = Warehouse::with_expansion(warehouse, part_two)?;
-
-    let robot_moves = directions
-        .lines()
-        .flat_map(|l| l.chars().map(|d| Direction::from_char(d).unwrap()))
+        })
         .collect();
 
-    Some((warehouse, robot_moves))
-}
+    let robot = spaces.iter().position(|&r| r == Space::Robot)?;
 
-fn solve(input: &str, part_two: bool) -> usize {
-    let (mut warehouse, directions) = parse(input, part_two).expect("Failed to parse input");
-    for &d in &directions {
-        warehouse.move_robot(d);
-    }
-    warehouse.gps_sum()
+    let warehouse = Warehouse {
+        width,
+        robot,
+        spaces,
+    };
+
+    let directions: Vec<CardinalDirection> = directions
+        .chars()
+        .filter_map(|c| match c {
+            '<' => Some(CardinalDirection::Left),
+            '>' => Some(CardinalDirection::Right),
+            'v' => Some(CardinalDirection::Down),
+            '^' => Some(CardinalDirection::Up),
+            _ => None,
+        })
+        .collect();
+
+    Some((warehouse, directions))
 }
 
 pub fn part1(input: &str) -> usize {
-    solve(input, false)
+    let (warehouse, directions) = parse(input).expect("input parse failure");
+
+    let warehouse = directions.iter().fold(warehouse, |mut w, &d| {
+        w.move_robot(d);
+        w
+    });
+
+    warehouse
+        .spaces
+        .iter()
+        .enumerate()
+        .filter_map(|(i, &s)| match s {
+            Space::Box => {
+                let row = i / warehouse.width;
+                let col = i % warehouse.width;
+                Some(row * 100 + col)
+            }
+            _ => None,
+        })
+        .sum()
+}
+
+fn expand(warehouse: Warehouse) -> Warehouse {
+    let spaces = warehouse
+        .spaces
+        .iter()
+        .flat_map(|space| match space {
+            Space::Empty => [Space::Empty, Space::Empty],
+            Space::Wall => [Space::Wall, Space::Wall],
+            Space::Robot => [Space::Robot, Space::Empty],
+            Space::Box => [Space::BigBoxStart, Space::BigBoxEnd],
+            _ => panic!("Can not expand even further"),
+        })
+        .collect();
+
+    Warehouse {
+        spaces,
+        robot: warehouse.robot * 2,
+        width: warehouse.width * 2,
+    }
 }
 
 pub fn part2(input: &str) -> usize {
-    solve(input, true)
+    let (warehouse, directions) = parse(input).expect("input parse failure");
+    let warehouse = expand(warehouse);
+
+    let warehouse = directions.iter().fold(warehouse, |mut w, &d| {
+        w.move_robot(d);
+        w
+    });
+
+    warehouse
+        .spaces
+        .iter()
+        .enumerate()
+        .filter_map(|(i, &s)| match s {
+            Space::BigBoxStart => {
+                let row = i / warehouse.width;
+                let col = i % warehouse.width;
+                Some(row * 100 + col)
+            }
+            _ => None,
+        })
+        .sum()
 }
