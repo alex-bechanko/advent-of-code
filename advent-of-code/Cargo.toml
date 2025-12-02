@@ -17,10 +17,9 @@ path = "src/lib.rs"
 bench = false
 
 [[bench]]
-name = "individual_solutions"
+name = "y2024_individual_solutions"
 harness = false
 
 [[bench]]
-name = "all_solutions"
+name = "y2024_all_solutions"
 harness = false
-

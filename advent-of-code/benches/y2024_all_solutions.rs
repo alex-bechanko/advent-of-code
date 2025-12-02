@@ -25,7 +25,7 @@ fn read_input_file(file: &str) -> String {
 
 #[allow(clippy::too_many_lines)]
 pub fn aoc2024(c: &mut Criterion) {
-    c.bench_function("all_solutions", |b| {
+    c.bench_function("y2024_all_solutions", |b| {
         b.iter(|| {
             aoc::y2024::day01::part1(black_box(&read_input_file("./inputs/2024-12-01.txt")));
             aoc::y2024::day01::part2(black_box(&read_input_file("./inputs/2024-12-01.txt")));
