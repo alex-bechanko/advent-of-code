@@ -23,3 +23,7 @@ harness = false
 [[bench]]
 name = "y2024_all_solutions"
 harness = false
+
+[[bench]]
+name = "y2025_individual_solutions"
+harness = false
