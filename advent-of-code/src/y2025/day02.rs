@@ -16,32 +16,33 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-fn is_repetition(id: &[u8], size: usize) -> bool {
-    if id.is_empty() {
-        return true;
-    } else if id.len() < size * 2 || id[0..size] != id[size..size * 2] {
-        return false;
-    }
+fn is_repetition(id: usize, size: u32) -> bool {
+    let chunk_size = 10usize.pow(size);
+    let chunk1 = id % chunk_size;
+    let chunk2 = (id / chunk_size) % chunk_size;
 
-    id.len() == 2 * size || is_repetition(&id[size..], size)
+    if id == 0 {
+        true
+    } else if chunk1 != chunk2 {
+        false
+    } else {
+        id.ilog10() + 1 == 2 * size || is_repetition(id / chunk_size, size)
+    }
 }
 
 fn is_part1_valid(id: usize) -> bool {
-    let id = id.to_string();
-    let id = id.as_bytes();
+    let digits = id.ilog10() + 1;
 
-    if id.len() % 2 == 1 {
+    if digits % 2 == 1 {
         return true;
     }
 
-    !is_repetition(id, id.len() / 2)
+    !is_repetition(id, digits / 2)
 }
 
 fn is_part2_valid(id: usize) -> bool {
-    let id = id.to_string();
-    let id = id.as_bytes();
     let min = 1;
-    let max = id.len() / 2;
+    let max = id.ilog10().div_ceil(2);
 
     (min..=max).all(|size| !is_repetition(id, size))
 }
@@ -75,19 +76,19 @@ mod test {
     #[test]
     fn test_is_repetition() {
         let tests = vec![
-            ("456456", 3, true),
-            ("44", 1, true),
-            ("555", 1, true),
-            ("555555", 1, true),
-            ("555555", 2, true),
-            ("555555", 3, true),
-            ("555555", 4, false),
-            ("555555", 5, false),
+            (456456, 3, true),
+            (44, 1, true),
+            (555, 1, true),
+            (555555, 1, true),
+            (555555, 2, true),
+            (555555, 3, true),
+            (555555, 4, false),
+            (555555, 5, false),
         ];
 
         for (id, size, expected) in tests {
-            let id = id.as_bytes();
-            assert_eq!(expected, is_repetition(id, size));
+            //let id = id.as_bytes();
+            assert_eq!(expected, is_repetition(id, size), "{id} -- {size}");
         }
     }
 }
