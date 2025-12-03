@@ -36,6 +36,12 @@ pub fn aoc2025(c: &mut Criterion) {
     c.bench_function("2025-12-02 Part 2", |b| {
         b.iter(|| aoc::y2025::day02::part2(black_box(&read_input_file("./inputs/2025-12-02.txt"))))
     });
+    c.bench_function("2025-12-03 Part 1", |b| {
+        b.iter(|| aoc::y2025::day03::part1(black_box(&read_input_file("./inputs/2025-12-03.txt"))))
+    });
+    c.bench_function("2025-12-03 Part 2", |b| {
+        b.iter(|| aoc::y2025::day03::part2(black_box(&read_input_file("./inputs/2025-12-03.txt"))))
+    });
 }
 
 criterion_group!(solutions, aoc2025);
